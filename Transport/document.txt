@@ -1,0 +1,2 @@
+student_academic_record
+add a column name transport_id(default 0)

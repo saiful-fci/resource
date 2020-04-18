@@ -1,0 +1,142 @@
+public static function StudentsForTransport($data)
+    {
+        $currentBranchId = Session::get('user.current_branch_id');
+        return DB::table('student_academic_record as sar')
+            ->join('student_profile as sp', 'sp.id', '=', 'sar.fk_std_profile_id')
+            ->join('cc_section_setup as ss', 'sar.fk_section_setup_id', '=', 'ss.id')
+            ->join('batch_wise_shift as bws', 'ss.fk_batch_wise_shift_id', '=', 'bws.id')
+            ->join('batch_info as bi', 'bws.fk_batch_id', '=', 'bi.id')
+            ->join('academic_session as as', 'as.id', '=', 'bi.fk_academic_session_id')
+            ->join('transport as tt','tt.id','=','sar.transport_id')
+            ->where('bws.id', $data['batch_wise_shift_id'])
+            ->where('sar.status', 1)
+            ->where('ss.id', $data['section_setup_id'])
+            ->where('sar.transport_id','>',0)
+            ->where('ss.fk_branch_id', $currentBranchId)
+            ->orderBy('sp.roll_no','ASC')
+            ->get([
+                'sp.*',
+                'sp.id as profile_id',
+                'sar.id as academic_record_id',
+                'sar.transport_id as transport_id',
+                'tt.*'
+            ]);
+    }
+    public static function differPayableArray($request)
+    {
+        $request=(object)$request;
+        $sectionId=$request->sectionId;
+        $payHeadId=$request->pay_head;
+        $monthId=$request->monthId;
+        $amount=$request->amount;
+        $sarId=$request->sarId;
+        $fnArray=array_combine($sarId, $amount);
+        $section=DB::table('cc_section_setup as cs')
+                            ->where('cs.id',$sectionId)
+                            ->get();
+    $scheme_master_id=$section[0]->fk_scheme_master_id;
+    $scheme_details=DB::table('pay_scheme_details as psd')
+                    ->where('psd.fk_scheme_master_id',$scheme_master_id)
+                    ->where('psd.fk_pay_head_id',$payHeadId)
+                    ->get();
+        if(!empty($scheme_details)){
+            $scheme_details_id=$scheme_details[0]->id;
+            $returnFnArray=array('scheme_details_id'=>$scheme_details_id,'fnArray'=>$fnArray);
+            return $returnFnArray;
+        }
+        else{
+            return 3;
+        }
+    
+    }
+
+    public static function payableAssign($fnArray,$request,$scheme_details_id)
+    {
+      foreach ($fnArray as $key => $value) {
+        $payable_master_array=DB::table('pay_student_payable_master as pspm')
+            ->join('pay_student_payable_details as pspd','pspd.fk_student_payable_master_id','=','pspm.id')
+            ->where('pspm.fk_academic_record_id',$key)
+            ->where('pspm.fk_month_id',$request['monthId'])
+            ->get();
+    if($payable_master_array){
+        $pay_head=[];
+        foreach ($payable_master_array as $val) {
+            $pay_head[]=$val->fk_pay_head_id;
+        }
+        $search=in_array($request['pay_head'], $pay_head);
+    if(empty($search)){
+      $payable_master=DB::table('pay_student_payable_master')
+                ->where('fk_academic_record_id',$key)
+                ->where('fk_month_id',$request['monthId'])
+                ->get();
+        $result=DB::table('pay_student_payable_master as pspm')
+        ->where('pspm.fk_academic_record_id',$key)
+        ->where('pspm.fk_month_id',$request['monthId'])
+        ->update([
+            'pspm.payable_amount'=>$payable_master[0]->payable_amount+$value,
+        ]);
+        $result=DB::table('pay_student_payable_details')
+        ->insertGetId([
+            'fk_student_payable_master_id'=>$payable_master[0]->id,
+            'fk_pay_head_id'=>$request['pay_head'],
+            'fk_pay_scheme_details_id'=>$scheme_details_id,
+            'amount'=>$value,
+            'created_at'=>date('Y-m-d h:i:s'),
+        ]);
+    if($result){
+        $sarArr=DB::table('student_academic_record')
+                    ->where('id',$key)->get();
+        $oldPayable=DB::table('pay_student_master')
+                    ->where('fk_student_profile_id',$sarArr[0]->fk_std_profile_id)
+                    ->get();
+        DB::table('pay_student_master')
+        ->where('fk_student_profile_id',$sarArr[0]->fk_std_profile_id)
+        ->update([
+            'total_payable'=>$oldPayable[0]->total_payable+$value
+        ]);
+        $existingPayable=DB::table('pay_student_year_wise_history')
+                    ->where('fk_student_profile_id',$sarArr[0]->fk_std_profile_id)
+                    ->get();
+        DB::table('pay_student_year_wise_history')
+        ->where('fk_student_profile_id',$sarArr[0]->fk_std_profile_id)
+        ->update([
+            'payable_amount'=>$existingPayable[0]->payable_amount+$value
+        ]);
+    }
+    
+  }else{
+    return 2;
+  }
+    }         
+    else{
+        //here Insert Query
+        return 0;
+      }
+    }
+    return 1;
+  }
+    
+  public static function StudentsForTransportAssign($data)
+    {
+        $currentBranchId = Session::get('user.current_branch_id');
+        $result=DB::table('student_academic_record as sar')
+            ->join('student_profile as sp', 'sp.id', '=', 'sar.fk_std_profile_id')
+            ->join('cc_section_setup as ss', 'sar.fk_section_setup_id', '=', 'ss.id')
+            ->join('batch_wise_shift as bws', 'ss.fk_batch_wise_shift_id', '=', 'bws.id')
+            ->join('batch_info as bi', 'bws.fk_batch_id', '=', 'bi.id')
+            ->join('academic_session as as', 'as.id', '=', 'bi.fk_academic_session_id')
+            ->where('bws.id', $data['batch_wise_shift_id'])
+            ->where('sar.status', 1)
+            ->where('sar.transport_id',0)
+            ->where('ss.id', $data['section_setup_id'])
+            ->where('ss.fk_branch_id', $currentBranchId)
+            ->orderBy('sp.roll_no','ASC')
+            ->get([
+                'sp.*',
+                'sp.id as profile_id',
+                'sar.id as academic_record_id'
+            ]);
+        $transport=DB::table('transport')->get();
+        $returnArr=array('result'=>$result,'transport'=>$transport);
+        return $returnArr;
+    }

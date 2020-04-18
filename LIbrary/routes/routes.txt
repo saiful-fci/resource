@@ -1,0 +1,152 @@
+Route::get('library',
+        ['as' => 'library',
+            'uses' => 'LibraryController@index'
+        ]);
+    Route::get('loadPublisherModal',
+        ['as' => 'loadPublisherModal',
+            'uses' => 'LibraryController@loadPublisherModal'
+        ]);
+    Route::post('savePublisher.post',
+        ['as' => 'savePublisher.post',
+            'uses' => 'LibraryController@savePublisher'
+        ]);
+    Route::get('publisherView',
+        ['as' => 'publisherView',
+            'uses' => 'LibraryController@publisherView'
+        ]);
+    Route::get('deletePublisher',
+        ['as' => 'deletePublisher',
+            'uses' => 'LibraryController@deletePublisher'
+        ]);
+    Route::get('updatePublisher/{publisherId}',
+        ['as' => 'updatePublisher',
+            'uses' => 'LibraryController@updatePublisher'
+        ]);
+    Route::get('addMember',
+        ['as' => 'addMember',
+            'uses' => 'LibraryController@addMember'
+        ]);
+    Route::get('getCustomIdBySarId',
+        ['as' => 'getCustomIdBySarId',
+            'uses' => 'LibraryController@getCustomIdBySarId'
+        ]);
+    Route::post('libraryMemberSave',
+        ['as' => 'libraryMemberSave',
+            'uses' => 'LibraryController@libraryMemberSave'
+        ]);
+    Route::get('viewMembers',
+        ['as' => 'viewMembers',
+            'uses' => 'LibraryController@viewMembers'
+        ]);
+    Route::get('deleteMember',
+        ['as' => 'deleteMember',
+            'uses' => 'LibraryController@deleteMember'
+        ]);
+    Route::get('authorAdd',
+        ['as' => 'authorAdd',
+            'uses' => 'LibraryController@authorAdd'
+        ]);
+    Route::post('authorSave',
+        ['as' => 'authorSave',
+            'uses' => 'LibraryController@authorSave'
+        ]);
+    Route::get('authorView',
+        ['as' => 'authorView',
+            'uses' => 'LibraryController@authorView'
+        ]);
+    Route::get('authorUpdate/{authorId}',
+        ['as' => 'authorUpdate',
+            'uses' => 'LibraryController@authorUpdate'
+        ]); 
+    Route::get('deleteauthor',
+        ['as' => 'deleteauthor',
+            'uses' => 'LibraryController@deleteauthor'
+        ]);
+    Route::get('addBook',
+        ['as' => 'addBook',
+            'uses' => 'LibraryController@addBook'
+        ]);
+    Route::post('bookSave',
+        ['as' => 'bookSave',
+            'uses' => 'LibraryController@bookSave'
+        ]);
+    Route::get('bookView',
+        ['as' => 'bookView',
+            'uses' => 'LibraryController@bookView'
+        ]);
+    Route::get('updateBook',
+        ['as' => 'updateBook',
+            'uses' => 'LibraryController@updateBook'
+        ]);
+    Route::get('deleteBook',
+        ['as' => 'deleteBook',
+            'uses' => 'LibraryController@deleteBook'
+        ]);
+    Route::get('bookEntry',
+        ['as' => 'bookEntry',
+            'uses' => 'LibraryController@bookEntry'
+        ]);
+    Route::get('updateField',
+        ['as' => 'updateField',
+            'uses' => 'LibraryController@updateField'
+        ]);
+    Route::get('deleteField',
+        ['as' => 'deleteField',
+            'uses' => 'LibraryController@deleteField'
+        ]);
+    Route::post('bookEntry',
+        ['as' => 'bookEntry',
+            'uses' => 'LibraryController@bookEntryPost'
+        ]);
+    Route::get('bookShow',
+        ['as' => 'bookShow',
+            'uses' => 'LibraryController@bookShow'
+        ]);
+    Route::get('bookList',
+        ['as' => 'bookList',
+            'uses' => 'LibraryController@bookList'
+        ]);
+    Route::get('bookAssignForm',
+        ['as' => 'bookAssignForm',
+            'uses' => 'LibraryController@bookAssignForm'
+        ]);
+    Route::get('bookIssueForm',
+        ['as' => 'bookIssueForm',
+            'uses' => 'LibraryController@bookIssueForm'
+        ]);
+    Route::get('choiceList',
+        ['as' => 'choiceList',
+            'uses' => 'LibraryController@choiceList'
+        ]);
+    Route::get('getMemberId',
+        ['as' => 'getMemberId',
+            'uses' => 'LibraryController@getMemberId'
+        ]);
+    Route::get('bookIssue',
+        ['as' => 'bookIssue',
+            'uses' => 'LibraryController@bookIssue'
+        ]);
+    Route::get('itemDelete',
+        ['as' => 'itemDelete',
+            'uses' => 'LibraryController@itemDelete'
+        ]);
+    Route::get('returnBook',
+        ['as' => 'returnBook',
+            'uses' => 'LibraryController@returnBook'
+        ]);
+    Route::get('getBookForReturn',
+        ['as' => 'returnBookPost',
+            'uses' => 'LibraryController@returnBookPost'
+        ]);
+    Route::post('returnConfirm',
+        ['as' => 'returnConfirm',
+            'uses' => 'LibraryController@returnConfirm'
+        ]);
+    Route::get('activeInactive',
+        ['as' => 'activeInactive',
+            'uses' => 'LibraryController@activeInactive'
+        ]);
+    Route::get('updateBookList',
+        ['as' => 'updateBookList',
+            'uses' => 'LibraryController@updateBookList'
+        ]);

@@ -1,0 +1,36 @@
+<div class="widget stacked setup">
+      <div class="widget-header">
+         <i class="icon-cogs"></i>
+         <h3> Institute Goods and Accessories </h3>
+      </div>
+      <!-- /widget-header -->
+      <div class="widget-content setup-content">
+         <div class="setup-items">
+            <div class="setup-item item-overlay">
+               <i class="icon-list-alt setup-icon overlay-bg"></i>
+               <span class="setup-label overlay-bg">Goods and Accessories</span>
+               <div class="item-overlay-body">
+                  <p><a class="btn btn-primary btn-sm" data-toggle="modal" href="#modal" onclick="loadModal('addGoodsCategory')"><i class="icon-plus-sign"></i>Add Cat</a></p>
+                  <p><a class="btn btn-primary btn-sm" data-toggle="modal" href="#modal" onclick="loadModal('addGoodsSubCategory')"><i class="icon-plus-sign"></i>Add SubCat</a></p>
+               </div>
+            </div>
+            <div class="setup-item item-overlay">
+               <i class="icon-list-alt setup-icon overlay-bg"></i>
+               <span class="setup-label overlay-bg">Category Subcatory View</span>
+               <div class="item-overlay-body">
+                 <p><a class="btn btn-primary btn-sm" data-toggle="modal" href="#modal" onclick="loadModal('catView')"><i class="icon-plus-sign"></i>Category View</a></p>
+                 <p><a class="btn btn-primary btn-sm" data-toggle="modal" href="#modal" onclick="loadModal('subCatView')"><i class="icon-plus-sign"></i>Sub Category View</a></p>
+               </div>
+            </div>
+            <div class="setup-item item-overlay">
+               <i class="icon-list-alt setup-icon overlay-bg"></i>
+               <span class="setup-label overlay-bg">Goods Reports</span>
+               <div class="item-overlay-body">
+                 <p><a class="btn btn-primary btn-sm" data-toggle="modal" href="#modal" onclick="loadModal('goodsEntry')"><i class="icon-plus-sign"></i>Goods Entry</a></p>
+                  <p><a class="btn btn-primary btn-sm" href="{{URL::to('productsView')}}"><i class="icon-plus-sign"></i>View</a></p>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- /widget-content -->
+   </div>

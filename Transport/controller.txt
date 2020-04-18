@@ -1,0 +1,72 @@
+public function differPayable()
+    {
+        $getSessions = StudentService::getAcademicSession();
+        $getClass = StudentAttendanceService::getClass();
+        return view('fees.differPayable.differPayable',compact('getSessions','getClass'));
+    }
+    public function getStudentsForDifferPayable(Request $request)
+    {
+      return StudentService::StudentsForTransport($request->all());
+    }
+    public function getPayhead(Request $request)
+    {
+        if($request->ajax()){
+            return PaymentHead::all();
+        }
+    }
+    public function getMonth(Request $request)
+    {
+       if($request->ajax()){
+            return Month::all();
+        } 
+    }
+    public function differPayableAssign(Request $request)
+    {
+        $result=StudentService::differPayableArray($request->all());
+        if($result['fnArray']){
+        $scheme_details_id=$result['scheme_details_id'];
+        $result=array_filter($result['fnArray']);
+        $result=StudentService::payableAssign($result,$request->all(),$scheme_details_id);
+        if($result==0){
+            return redirect()->back()->with('error','Please Payment Master Or Payable First');
+        }elseif($result==1){
+          return redirect()->back()->with('success','Differ Payable Successfully Assign');  
+        }
+        else{
+            return redirect()->back()->with('error','Already Payable Exists..');
+        }
+
+        }else{
+            return redirect()->back()->with('error','Please Payment Head Add In Scheme First..');
+        }
+        
+    }
+    public function transportRouteAssign()
+    {
+        $getSessions = StudentService::getAcademicSession();
+        $getClass = StudentAttendanceService::getClass();
+        return view('fees.differPayable.transportRouteAssign',compact('getSessions','getClass'));
+    }
+    public function StudentsForTransportAssign(Request $request)
+    {
+        return StudentService::StudentsForTransportAssign($request->all());
+
+    }
+    public function transportRouteAssignPost(Request $request)
+    {
+        $sarIds=$request->sarId;
+        $routeArr=array_filter($request->route_name);
+        $sarIdArr=[];
+        foreach ($routeArr as $key => $value) {
+            $sarIdArr[$key]=$sarIds[$key];
+        }
+        $fnArray=array_combine($sarIdArr, $routeArr);
+        foreach ($fnArray as $key => $value) {
+            DB::table('student_academic_record as sar')
+            ->where('sar.id',$key)
+            ->update([
+                'sar.transport_id'=>$value
+            ]);
+        }
+        return redirect()->back()->with('success','Route Assign Successfully');
+    }

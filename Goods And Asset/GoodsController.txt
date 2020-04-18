@@ -1,0 +1,168 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Validator;
+use Auth;
+use Illuminate\Http\Request;
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+use DB;
+use App\Models\IncomeVoucherDetails;
+use App\Models\IncomeVoucher;
+use App\Models\ExpenseVoucherDetails;
+use App\Models\ExpenseVoucher;
+use Session;
+use Lang;
+use App\Services\GoodsService;
+
+class GoodsController extends Controller
+{
+    public function addGoodsCategory()
+    {
+        return view('goods.addGoodsCategory');
+    } 
+    public function saveAddGoodsCategory(Request $request)
+    {
+
+    	try {
+            $maxId=DB::table('goods_cat')->max('id');
+	    	$result=DB::table('goods_cat')
+	    	->insert([
+	    		'category_name'=>$request->category_name,
+	    		'view_order'=>$maxId+1
+	    		]);
+           if($result===true){
+                return redirect()->route('reports')->with('success', 'Weldone! Goods Category Created Successfully');
+            }
+        } catch (\Exception $e) {
+            Session::flash('mySqlError', $e->errorInfo[2]); // session set only once
+            $err_msg = Lang::get("mysqlError." . $e->errorInfo[1]);
+       	 	return redirect()->route('reports')->with('error', $err_msg);
+        }		
+    }
+    public function addGoodsSubCategory()
+    {
+    	$getGoodsCats=GoodsService::getGoodsCats();
+        return view('goods.addGoodsSubCategory',compact('getGoodsCats'));
+    }
+    public function saveAddGoodsSubCategory(Request $request)
+    {   
+        $finalArr=$request->all();
+        $result=GoodsService::saveAddGoodsSubCategory($finalArr);
+         if($result===true){
+            return redirect()->route('reports')->with('success', 'Weldone! Goods Sub Category Created Successfully');
+            }else{
+                return redirect()->route('reports')->with('success', 'something went wrong');
+            }
+        
+    }
+    public function goodsEntry()
+    {
+        $getGoodsCats=GoodsService::getGoodsCats();
+        return view('goods.goodsEntry',compact('getGoodsCats'));
+    }
+    public function getGoodsSubCat(Request $request)
+    {
+        if ($request->ajax()) {
+            $result=GoodsService::getGoodsSubCats($request->goodsCatId);
+            // return $result;
+            if($result){
+                return response()->json(['data'=>$result,'status'=>true]);
+            }else{
+                return response()->json(['status' => false]);
+            }
+        }
+    }
+    public function saveGoodsProduct(Request $request)
+    {
+        $existingData=DB::table('goods_accessories')
+            ->where('fk_goods_cat',$request->goods_cat)
+            ->get();
+            $subCatArr=[];
+            foreach ($existingData as $key => $value) {
+                $subCatArr[]=$value->fk_goods_subcat;
+            }
+            $subCatID=array_flip($subCatArr);
+            $forInsert=array_diff_key($request['quantity'], $subCatID);
+            $forUpdate=array_diff_key($request['quantity'], $forInsert);
+            $result=GoodsService::saveGoodsProduct($forInsert,$forUpdate,$request->all());
+             if($result===true){
+            return redirect()->route('reports')->with('success', 'Weldone! Product Created Successfully');
+            }else{
+                return redirect()->route('reports')->with('success', 'something went wrong');
+            }
+          
+    }
+    public function productsView()
+    {
+        $products=GoodsService::productsView();
+        return view('goods.product',compact('products'));
+    }
+    public function deleteProduct(Request $request)
+    {
+        if($request->ajax()){
+            $result=DB::table('goods_accessories')
+            ->where('id',$request->productId)
+            ->delete();
+        return $result;
+        }
+    }
+    public function updateProduct($productId, Request $request)
+    {
+        if($request->ajax())
+        {
+            $result=GoodsService::updateProduct($productId,$request->all());
+            if($result===true){
+                return response()->json(['message' => 'Quantity Updated Successfully', 'status' => true]);
+            }
+        }
+    }
+    public function checkDuplicate(Request $request)
+    {
+        if($request->ajax()){
+            $result=DB::table('goods_accessories')
+            ->where('fk_goods_cat',$request->goodsCatId)
+            ->where('fk_goods_subcat',$request->subCatID)
+            ->get();
+            if($result){
+                foreach ($result as $key => $value) {
+                    return $value->quantity;
+                }
+            }else{
+
+            }
+        }
+    }
+    public function catView()
+    {
+        $results=GoodsService::catView();
+        return view('goods.goodsCategoryView',compact('results'));
+
+    }
+    public function categoryDelete(Request $request)
+    {
+        $result=GoodsService::categoryDelete($request->all());
+        if($result===true){
+            return response()->json(['message' =>'Successfully Deleted!!.','status' => true]);
+        }else{
+        return response()->json(['message'=>"Already Used!! Can't Delete.",'status'=>false]); 
+        }
+    }
+    public function subCatView()
+    {
+        $results=GoodsService::subCatView();
+        return view('goods.subCategoryView',compact('results'));
+    }
+    public function subCategoryDelete(Request $request)
+    {
+        $result=GoodsService::subCategoryDelete($request->all());
+        if($result===true){
+            return response()->json(['message' =>'Successfully Deleted!!.','status' => true]);
+        }else{
+        return response()->json(['message'=>"Already Used!! Can't Delete.",'status'=>false]); 
+        }
+    }
+}
+
+    

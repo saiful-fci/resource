@@ -1,0 +1,175 @@
+<?php
+
+namespace App\Services;
+
+use Validator;
+use App\Http\Requests;
+use App\Models\AcademicSession;
+use Auth;
+use Lang;
+use Session;
+use DB;
+
+/* Load Model*/
+
+class GoodsService
+{
+    public static function getGoodsCats()
+    {
+        return DB::table('goods_cat')->get();
+    }
+    public static function saveAddGoodsSubCategory($finalArr=null)
+    {
+
+    	try {
+            foreach ($finalArr['subcategory_name'] as $value) {
+             DB::table('goods_subcat')
+            ->insert([
+                'fk_goods_cat_id'=>$finalArr['goods_cat'],
+                'goods_SubCat_name'=>$value,
+                'view_order'=>DB::table("goods_subcat")->max('id')+1,
+            ]);  
+        }
+        return true;
+        } catch (\Exception $e) {
+            Session::flash('mySqlError', $e->errorInfo[2]); // session set only once
+            $err_msg = Lang::get("mysqlError." . $e->errorInfo[1]);
+            return $err_msg;
+        }
+    }
+    public static function getGoodsSubCats($goodsCatId)
+    {
+        return DB::table('goods_subcat')->where('fk_goods_cat_id',$goodsCatId)->get();
+
+    }
+    public static function saveGoodsProduct($forInsert,$forUpdate,$data)
+    {
+        // return $data;
+     try {
+          if(!empty($forInsert && $forUpdate)){
+
+            $product['fk_goods_cat']=$data['goods_cat'];
+            foreach ($forInsert as $key => $value) {
+               $product['fk_goods_subcat']=$key;
+               $product['quantity']=$value;
+               DB::table('goods_accessories')->insert($product);
+            }
+            foreach ($forUpdate as $key => $value) {
+                $product['fk_goods_subcat']=$key;
+                $product['quantity']=$value;
+                DB::table('goods_accessories')
+                ->where('fk_goods_cat',$product['fk_goods_cat'])
+                ->where('fk_goods_subcat',$product['fk_goods_subcat'])
+                ->update($product);
+                
+            }
+                echo "<pre>";
+                print_r($data);
+                echo "<hr/>";
+                echo "<pre>";
+                print_r($forInsert);
+                echo "insert <hr/>";
+                echo "<pre>";
+                print_r($forUpdate);
+                echo "update <hr/>";
+                }
+                elseif($forInsert){
+                $product=array();
+                $product['fk_goods_cat']=$data['goods_cat'];
+                foreach ($data['quantity'] as $key => $value) {
+                $product['fk_goods_subcat']=$key;
+                $product['quantity']=$value;
+                DB::table('goods_accessories')->insert($product);
+                // return true;
+                }
+            }
+            else{
+                $product=array();
+                $product['fk_goods_cat']=$data['goods_cat'];
+                foreach ($data['quantity'] as $key => $value) {
+                $product['fk_goods_subcat']=$key;
+                $product['quantity']=$value;
+                DB::table('goods_accessories')
+                ->where('fk_goods_cat',$data['goods_cat'])
+                ->where('fk_goods_subcat',$product['fk_goods_subcat'])
+                ->update($product);
+                    }
+                }          
+        return true;
+        } catch (\Exception $e) {
+            Session::flash('mySqlError', $e->errorInfo[2]); // session set only once
+            $err_msg = Lang::get("mysqlError." . $e->errorInfo[1]);
+            return $err_msg;
+        }   
+    }
+    public static function productsView()
+    {
+        $result=DB::table('goods_accessories as ga')
+        ->join('goods_subcat','ga.fk_goods_subcat','=','goods_subcat.id')
+        ->join('goods_cat','ga.fk_goods_cat','=','goods_cat.id')
+        ->get([
+            'ga.id as id',
+            'goods_cat.category_name as category_name',
+            'goods_subcat.goods_SubCat_name as goods_SubCat_name',
+            'ga.quantity as quantity',
+        ]);
+        return $result;
+    }
+    public static function updateProduct($productId,$request)
+    {
+        try {
+                DB::table('goods_accessories')
+                ->where('id',$productId)
+                ->update([
+                    'quantity'=>$request['newQuntity'],
+                ]);
+        return true;
+        } catch (\Exception $e) {
+            Session::flash('mySqlError', $e->errorInfo[2]); // session set only once
+            $err_msg = Lang::get("mysqlError." . $e->errorInfo[1]);
+            return $err_msg;
+        }
+    }
+    public static function catView()
+    {
+        return DB::table('goods_cat')->get();
+    }
+    public static function categoryDelete($data)
+    {
+        $result=DB::table('goods_subcat')
+                ->where('fk_goods_cat_id',$data['goodsCatId'])
+                ->get();
+        if($result){
+            return false;
+        }else{
+             DB::table('goods_cat')
+            ->where('id',$data['goodsCatId'])
+            ->delete();
+            return true;
+        }
+    }
+    public static function subCatView(){
+        return DB::table('goods_subcat')
+            ->join('goods_cat','goods_subcat.fk_goods_cat_id','=','goods_cat.id')
+            ->get([
+                'goods_subcat.*',
+                'goods_cat.id as catId',
+                'goods_cat.category_name as category_name'
+            ]);
+    }
+    public static function subCategoryDelete($data)
+    {
+        $result=DB::table('goods_accessories as ga')
+                ->where('ga.fk_goods_subcat',$data['subCatId'])
+                ->get();
+        if($result){
+            return false;
+        }else{
+             DB::table('goods_subcat')
+            ->where('id',$data['subCatId'])
+            ->delete();
+            return true;
+        }
+        
+    } 
+}

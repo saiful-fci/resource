@@ -1,0 +1,32 @@
+Route::get('differPayable',
+        ['as' => 'differPayable',
+            'uses' => 'FeesSetupController@differPayable'
+        ]);
+    Route::get('getStudentsForDifferPayable',
+        ['as' => 'getStudentsForDifferPayable',
+            'uses' => 'FeesSetupController@getStudentsForDifferPayable'
+        ]);
+    Route::post('differPayableAssign',
+        ['as' => 'differPayableAssign',
+            'uses' => 'FeesSetupController@differPayableAssign'
+        ]);
+    Route::get('getPayhead',
+        ['as' => 'getPayhead',
+            'uses' => 'FeesSetupController@getPayhead'
+        ]);
+    Route::get('getMonth',
+        ['as' => 'getMonth',
+            'uses' => 'FeesSetupController@getMonth'
+        ]);
+    Route::get('transportRouteAssign',
+        ['as' => 'transportRouteAssign',
+            'uses' => 'FeesSetupController@transportRouteAssign'
+        ]);
+    Route::post('routeAssign',
+        ['as' => 'routeAssign',
+            'uses' => 'FeesSetupController@transportRouteAssignPost'
+        ]);
+    Route::get('StudentsForTransportAssign',
+        ['as' => 'StudentsForTransportAssign',
+            'uses' => 'FeesSetupController@StudentsForTransportAssign'
+        ]);

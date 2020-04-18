@@ -1,0 +1,60 @@
+Route::get('addGoodsCategory',
+        ['as' => 'addGoodsCategory',
+            'uses' => 'GoodsController@addGoodsCategory'
+        ]);
+    Route::post('saveAddGoodsCategory',
+        ['as' => 'saveAddGoodsCategory.post',
+            'uses' => 'GoodsController@saveAddGoodsCategory'
+        ]);
+    Route::get('addGoodsSubCategory',
+        ['as' => 'addGoodsSubCategory',
+            'uses' => 'GoodsController@addGoodsSubCategory'
+        ]);
+    Route::post('saveAddGoodsSubCategory',
+        ['as' => 'saveAddGoodsSubCategory.post',
+            'uses' => 'GoodsController@saveAddGoodsSubCategory'
+        ]);
+    Route::get('goodsEntry',
+        ['as' => 'GoodsEntry',
+            'uses' => 'GoodsController@goodsEntry'
+        ]);
+    Route::get('getGoodsSubCat',
+        ['as' => 'getGoodsSubCat',
+            'uses' => 'GoodsController@getGoodsSubCat'
+        ]);
+    Route::post('saveGoodsProduct',
+        ['as' => 'saveGoodsProduct.post',
+            'uses' => 'GoodsController@saveGoodsProduct'
+        ]);
+    Route::get('productsView',
+        ['as' => 'productsView',
+            'uses' => 'GoodsController@productsView'
+        ]);
+    Route::get('deleteProduct',
+        ['as' => 'deleteProduct',
+            'uses' => 'GoodsController@deleteProduct'
+        ]);
+    Route::get('updateProduct/{productId}',
+        ['as' => 'updateProduct',
+            'uses' => 'GoodsController@updateProduct'
+        ]);
+    Route::get('checkDuplicate',
+        ['as' => 'checkDuplicate',
+            'uses' => 'GoodsController@checkDuplicate'
+        ]);
+    Route::get('catView',
+        ['as' => 'catView',
+            'uses' => 'GoodsController@catView'
+        ]);
+    Route::get('categoryDelete',
+        ['as' => 'categoryDelete',
+            'uses' => 'GoodsController@categoryDelete'
+        ]);
+    Route::get('subCatView',
+        ['as' => 'subCatView',
+            'uses' => 'GoodsController@subCatView'
+        ]);
+    Route::get('subCategoryDelete',
+        ['as' => 'subCategoryDelete',
+            'uses' => 'GoodsController@subCategoryDelete'
+        ]);
